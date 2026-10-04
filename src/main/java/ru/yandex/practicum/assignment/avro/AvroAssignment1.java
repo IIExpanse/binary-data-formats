@@ -1,15 +1,19 @@
 package ru.yandex.practicum.assignment.avro;
 
 import lombok.extern.slf4j.Slf4j;
+import org.apache.avro.io.BinaryEncoder;
+import org.apache.avro.io.DatumWriter;
+import org.apache.avro.io.EncoderFactory;
+import org.apache.avro.specific.SpecificDatumWriter;
 import ru.yandex.practicum.avro.Gender;
 import ru.yandex.practicum.avro.User;
 
+import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.time.LocalDate;
 import java.util.HexFormat;
 import java.util.LinkedHashMap;
 import java.util.List;
-import java.util.Map;
 
 @Slf4j
 public class AvroAssignment1 {
@@ -19,10 +23,13 @@ public class AvroAssignment1 {
                 HexFormat.of().formatHex(bytes));
     }
 
-    private static byte[] serialize(User user) throws IOException {
-        // Реализуйте метод в соответствии с заданием
-        //     ...
-        return null;
+    public static byte[] serialize(User user) throws IOException {
+        ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
+        DatumWriter<User> userDatumWriter = new SpecificDatumWriter<>(user.getSchema());
+        BinaryEncoder encoder = EncoderFactory.get().binaryEncoder(outputStream, null);
+        userDatumWriter.write(user, encoder);
+        encoder.flush();
+        return outputStream.toByteArray();
     }
 
     // этот метод менять нельзя!
